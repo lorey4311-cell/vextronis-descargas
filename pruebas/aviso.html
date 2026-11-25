@@ -1,0 +1,60 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="app.css">
+<style>body{margin:0;background:#0b1220;font-family:system-ui,sans-serif}</style>
+</head><body>
+<div style="width:360px"><div id="avisoA" class="flex w-full items-center gap-2 border-b border-border bg-card/60 px-3 py-2 text-[11px] text-muted-foreground">
+<span class="grid size-6 shrink-0 place-items-center rounded-full bg-primary/15">
+<svg id="relojA" class="size-3.5 overflow-visible text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+<span class="min-w-0 flex-1 leading-snug">Los mensajes temporales están activados · 24 horas</span></div></div>
+
+<div style="width:320px;margin-top:12px"><div id="avisoB" class="flex w-full items-center gap-2 border-b border-border bg-card/60 px-3 py-2 text-[11px] text-muted-foreground">
+<span class="grid size-6 shrink-0 place-items-center rounded-full bg-primary/15">
+<svg id="relojB" class="size-3.5 overflow-visible text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+<span class="min-w-0 flex-1 leading-snug">Los mensajes temporales están activados · 7 días</span></div></div>
+
+<div style="width:360px;margin-top:12px"><div class="relative flex items-end gap-2 border-t border-border bg-panel/90 p-2.5">
+<div class="flex flex-1 items-end gap-1 rounded-3xl bg-input px-3 py-1.5">
+<button id="btnMas" class="grid size-8 shrink-0 place-items-center text-muted-foreground"><span id="circuloMas" class="grid size-5 place-items-center rounded-full bg-primary text-white"><svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></svg></span></button>
+<div class="relative min-w-0 flex-1"><textarea id="campo" rows="1" placeholder="Mensaje" class="max-h-24 w-full flex-1 resize-none bg-transparent py-1.5 text-sm outline-none"></textarea></div>
+<button class="grid size-8 shrink-0 place-items-center text-muted-foreground"><svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="8" width="16" height="10" rx="4"/></svg></button>
+<button class="grid size-8 shrink-0 place-items-center text-muted-foreground"><svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12a8 8 0 1 1-3-6"/></svg></button>
+</div>
+<button id="btnEnviar" class="grid size-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground"><svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/></svg></button>
+</div></div>
+
+<pre id="resultado" style="color:#22ff88;font-size:12px">midiendo</pre>
+<script>
+function m(aviso, reloj){
+  var c = document.getElementById(aviso), s = document.getElementById(reloj);
+  var rc = c.getBoundingClientRect(), rs = s.getBoundingClientRect();
+  return {
+    ancho: Math.round(rc.width),
+    altoFila: Math.round(rc.height),
+    desborde: c.scrollWidth - c.clientWidth,
+    relojAncho: Number(rs.width.toFixed(1)),
+    relojAlto: Number(rs.height.toFixed(1)),
+    margenIzq: Math.round(rs.left - rc.left),
+    margenDer: Math.round(rc.right - rs.right),
+    cortado: (rs.left - rc.left) < 4 || (rc.right - rs.right) < 0 || rs.width < 13.5
+  };
+}
+function medirTodo(){
+  var r = function(id){ return document.getElementById(id).getBoundingClientRect(); };
+  var centro = function(x){ return Number((x.top + x.height/2).toFixed(1)); };
+  var mas = r('btnMas'), campo = r('campo'), enviar = r('btnEnviar'), circ = r('circuloMas');
+  var salida = {
+    A: m('avisoA','relojA'),
+    B: m('avisoB','relojB'),
+    C: {
+      centroMas: centro(mas), centroCampo: centro(campo), centroEnviar: centro(enviar),
+      difMasCampo: Number(Math.abs(centro(mas)-centro(campo)).toFixed(1)),
+      difMasEnviar: Number(Math.abs(centro(mas)-centro(enviar)).toFixed(1)),
+      circuloW: Number(circ.width.toFixed(1)), circuloH: Number(circ.height.toFixed(1)),
+      masDebajoDelTexto: mas.top > campo.top + 4
+    }
+  };
+  document.getElementById('resultado').textContent = 'RESULTADO:' + JSON.stringify(salida);
+}
+medirTodo(); setTimeout(medirTodo, 300);
+</script></body></html>
